@@ -4,8 +4,32 @@ import { connectDb } from './config/db.js';
 import { logger } from './config/logger.js';
 import { createApp } from './app.js';
 let config;
-try { config = readEnv(); } catch (error) { console.error(error.message); process.exit(1); }
+try {
+  config = readEnv();
+} catch (error) {
+  console.error(error.message);
+  process.exit(1);
+}
 await connectDb(config.MONGO_URI);
-const server = createApp(config).listen(config.PORT, process.env.HOST || '127.0.0.1', () => logger.info({ port: config.PORT }, 'FreshWarden API ready'));
-server.on('error', error => { logger.error({ code: error.code }, error.code === 'EADDRINUSE' ? 'Port already in use; choose another PORT' : 'Server failed'); process.exit(1); });
-for (const signal of ['SIGTERM', 'SIGINT']) process.on(signal, () => { server.close(async () => { await mongoose.disconnect(); process.exit(0); }); setTimeout(() => process.exit(1), 10000).unref(); });
+const server = createApp(config).listen(
+  config.PORT,
+  process.env.HOST || '127.0.0.1',
+  () => logger.info({ port: config.PORT }, 'FreshWarden API ready'),
+);
+server.on('error', (error) => {
+  logger.error(
+    { code: error.code },
+    error.code === 'EADDRINUSE'
+      ? 'Port already in use; choose another PORT'
+      : 'Server failed',
+  );
+  process.exit(1);
+});
+for (const signal of ['SIGTERM', 'SIGINT'])
+  process.on(signal, () => {
+    server.close(async () => {
+      await mongoose.disconnect();
+      process.exit(0);
+    });
+    setTimeout(() => process.exit(1), 10000).unref();
+  });

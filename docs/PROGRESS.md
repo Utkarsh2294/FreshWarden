@@ -2,10 +2,16 @@
 
 Source of scope: supplied FreshWarden Master Plan §§9–11 and supplied engineering/design prompt. User requests phased prototype and 40–50 substantial commits pushed to Utkarsh2294/FreshWarden.
 
-## Phase 0 — foundation (in progress)
+## Phase 0 — foundation (local checks passed)
+
 MERN, JavaScript ESM, React 18/Vite, npm workspaces, API configuration, CI, PWA shell.
 
+## Phase 1 — platform (local checks passed)
+
+86 API tests + 2 web tests pass; pure rule statement/line coverage 100%. Mongo-backed auth, roles and store scope, catalog import, zone settings, 150 synthetic products, seeded lots and responsive workspace. Full details in phase-1.md. Live hosting and real phone checks remain pending.
+
 ## Phase gates
+
 Before each new phase re-read the source plan and both master prompts; implement and verify the current phase before advancing. External acceptance checks that need credentials, a phone, real photos, an FSSAI mentor, or hardware must remain pending rather than be claimed as passing.
 
 0. Foundation: local lint/test/build, API health, deploy preparation; live deploy pending user hosting access.
@@ -19,6 +25,7 @@ Before each new phase re-read the source plan and both master prompts; implement
 8. Stretch remains gated until all physical/provider acceptance checks pass.
 
 ## Assumptions
+
 - Empty remote repository; preserve its default main branch and never force push.
 - Development can use a local MongoDB binary launched by mongodb-memory-server; normal deployment requires MONGO_URI.
 - No provider keys or real pack photos supplied. Missing AI access must lead to human review.

@@ -15,13 +15,13 @@ npm run dev
 
 Web: http://localhost:5173. API: http://localhost:5000/health.
 
-| Command | Purpose |
-|---|---|
-| `npm run dev` | Start API and Vite together |
-| `npm run lint` | ESLint |
-| `npm test` | API Jest and web Vitest |
-| `npm run build` | Production PWA build |
-| `npm run format:check` | Formatting check |
+| Command                     | Purpose                      |
+| --------------------------- | ---------------------------- |
+| `npm run dev`               | Start API and Vite together  |
+| `npm run lint`              | ESLint                       |
+| `npm test`                  | API Jest and web Vitest      |
+| `npm run build`             | Production PWA build         |
+| `npm run format:check`      | Formatting check             |
 | `docker compose up --build` | Mongo, API, web on port 8080 |
 
 API environment variables are documented in `apps/api/.env.example`. `MONGO_URI` and `JWT_SECRET` are mandatory. Provider keys/model names are optional until their phase; unavailable integrations must never fabricate a successful safety check. Web `VITE_API_URL` is empty for same-origin proxying.
