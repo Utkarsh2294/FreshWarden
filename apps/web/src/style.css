@@ -1469,3 +1469,33 @@ details {
   gap: 9px;
   flex-wrap: wrap;
 }
+.result-heading {
+  margin: 15px 0;
+  font-size: 16px;
+  line-height: 1.6;
+}
+.finding {
+  border-top: 1px solid var(--border);
+  padding: 20px 0;
+  font-size: 12px;
+}
+.finding > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.finding > p {
+  margin: 12px 0;
+}
+.finding small {
+  font-size: 10px;
+  color: #81917b;
+}
+.inline-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
