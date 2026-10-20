@@ -1,0 +1,14 @@
+node_modules/
+.env
+.env.*
+!.env.example
+dist/
+coverage/
+.local/
+uploads/
+*.log
+datasets/**/*.jpg
+datasets/**/*.png
+datasets/**/*.webp
+test-results/
+.DS_Store
