@@ -10,6 +10,10 @@ MERN, JavaScript ESM, React 18/Vite, npm workspaces, API configuration, CI, PWA 
 
 86 API tests + 2 web tests pass; pure rule statement/line coverage 100%. Mongo-backed auth, roles and store scope, catalog import, zone settings, 150 synthetic products, seeded lots and responsive workspace. Full details in phase-1.md. Live hosting and real phone checks remain pending.
 
+## Phase 2 — Inward Gate (implemented; external evaluation pending)
+
+108 API + 2 web tests pass. Evidence, barcode/OCR capture, manual review, gateway fallbacks and idempotent disposition are implemented. See phase-2.md for measured versus pending acceptance and prototype ceilings.
+
 ## Phase gates
 
 Before each new phase re-read the source plan and both master prompts; implement and verify the current phase before advancing. External acceptance checks that need credentials, a phone, real photos, an FSSAI mentor, or hardware must remain pending rather than be claimed as passing.
