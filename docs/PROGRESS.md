@@ -26,6 +26,10 @@ MERN, JavaScript ESM, React 18/Vite, npm workspaces, API configuration, CI, PWA 
 
 153 API tests pass, including atomic transaction packing and concurrent last-unit protection. Controlled 50-order HTTP test blocks all 10 seeded bad cases with zero false blocks. Runtime benchmark script added; no production/load latency claim. Offline drafts remain blocked until an online check. See phase-5.md.
 
+## Phase 6 — Reports/network/inspector (implemented; final verification underway)
+
+169 API + 2 web tests pass. PDF visually checked; Latin/Devanagari font fallback and footer pagination fixed. Coverage gaps stay explicit. Inspector links expire/revoke and cannot authorize writes. See phase-6.md for bounded report scope and external acceptance still pending.
+
 ## Phase gates
 
 Before each new phase re-read the source plan and both master prompts; implement and verify the current phase before advancing. External acceptance checks that need credentials, a phone, real photos, an FSSAI mentor, or hardware must remain pending rather than be claimed as passing.
