@@ -12,3 +12,4 @@ datasets/**/*.png
 datasets/**/*.webp
 test-results/
 .DS_Store
+firmware/esp32/config.h
