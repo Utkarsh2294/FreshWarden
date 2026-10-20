@@ -1541,3 +1541,87 @@ details {
   background: #edf5e7;
   color: #4a743b;
 }
+.checklist {
+  padding: 5px 22px;
+}
+.checklist > div {
+  display: flex;
+  gap: 13px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+  align-items: start;
+  font-size: 12px;
+}
+.checklist > div:last-child {
+  border-bottom: 0;
+}
+.checklist svg {
+  flex-shrink: 0;
+  color: #78916a;
+}
+.checklist > div > div {
+  min-width: 0;
+  flex: 1;
+}
+.checklist .pill {
+  margin: 8px 0;
+}
+.checklist details {
+  font-size: 10px;
+  overflow-wrap: anywhere;
+}
+.risk-row {
+  padding: 15px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+}
+.risk-row > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+}
+.risk-row > div > strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.risk-row > div > span {
+  font-size: 18px;
+  color: #9b7135;
+  white-space: nowrap;
+}
+.risk-row > small {
+  display: block;
+  margin-top: 4px;
+  color: #7c8e76;
+}
+.risk-row p {
+  font-size: 10px;
+  color: #88957f;
+  margin-top: 10px;
+}
+.network-map {
+  height: 340px;
+  z-index: 0;
+}
+.inspector-layout > header {
+  padding: 25px 35px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: center;
+  background: var(--forest);
+  color: #fff;
+}
+.inspector-layout > header > span {
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+.inspector-layout main {
+  max-width: 1200px;
+}
+.snapshot-hash {
+  margin-top: 25px;
+  font-size: 10px;
+  color: #81917a;
+  overflow-wrap: anywhere;
+}

@@ -26,6 +26,9 @@ import Coldchain from './pages/Coldchain.jsx';
 import Shelf from './pages/Shelf.jsx';
 import Incidents from './pages/Incidents.jsx';
 import Dispatch from './pages/Dispatch.jsx';
+import Reports from './pages/Reports.jsx';
+import NetworkPage from './pages/Network.jsx';
+import Inspector from './pages/Inspector.jsx';
 import { useRealtime } from './hooks/useRealtime.js';
 import { api } from './lib/api.js';
 import { Brand, ErrorState, Empty, PageTitle } from './components/Ui.jsx';
@@ -91,6 +94,8 @@ export default function App() {
       client.clear();
     }
   }, [me.error, client]);
+  if (location.pathname.startsWith('/inspect/'))
+    return <Inspector accessToken={location.pathname.split('/')[2]} />;
   if (!token) return <Login onLogin={login} />;
   const go = (path) => {
     navigate(`/${path}`);
@@ -295,6 +300,15 @@ export default function App() {
               token={token}
               user={me.data}
             />
+          ) : page === 'reports' ? (
+            <Reports
+              key={selectedStore}
+              data={data}
+              token={token}
+              user={me.data}
+            />
+          ) : page === 'network' ? (
+            <NetworkPage token={token} />
           ) : (
             <>
               <PageTitle

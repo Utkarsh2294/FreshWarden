@@ -34,6 +34,7 @@ const env = {
   ...credentials,
   MONGO_URI: mongo.getUri('freshwarden'),
   NODE_ENV: 'development',
+  CLIENT_ORIGIN: 'http://localhost:5177',
 };
 const seed = spawn(process.execPath, ['apps/api/src/seed.js'], {
   env,
@@ -43,6 +44,17 @@ const code = await new Promise((resolve) => seed.on('exit', resolve));
 if (code) {
   await mongo.stop();
   process.exit(code);
+}
+const networkSeed = spawn(process.execPath, ['tools/seed-network.js'], {
+  env,
+  stdio: 'inherit',
+});
+const networkCode = await new Promise((resolve) =>
+  networkSeed.on('exit', resolve),
+);
+if (networkCode) {
+  await mongo.stop();
+  process.exit(networkCode);
 }
 console.log('Local demo: http://localhost:5177 · manager phone 9000000001');
 console.log(
