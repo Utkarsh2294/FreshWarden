@@ -18,6 +18,10 @@ MERN, JavaScript ESM, React 18/Vite, npm workspaces, API configuration, CI, PWA 
 
 120 API tests pass including real MongoDB telemetry and excursion flows. Simulator is explicit and development-only. Firmware is uncompiled. See phase-3.md for threshold reconciliation, TTL collection tradeoff and physical checks.
 
+## Phase 4 — Shelf and CAPA (local checks passed; real-photo evaluation pending)
+
+134 API + 2 web tests pass. Proof-based closure and grouped findings implemented; no live vision or 40-photo precision/recall claim. Browser exercised the development cold-chain simulator: a closed excursion and estimated debit appeared, and affected lots remained quarantined.
+
 ## Phase gates
 
 Before each new phase re-read the source plan and both master prompts; implement and verify the current phase before advancing. External acceptance checks that need credentials, a phone, real photos, an FSSAI mentor, or hardware must remain pending rather than be claimed as passing.
