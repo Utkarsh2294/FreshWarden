@@ -5,6 +5,10 @@ export function fail(status, code, message) {
 export const route = (handler) => (req, res, next) =>
   Promise.resolve(handler(req, res, next)).catch(next);
 export function errorHandler(err, req, res, _next) {
+  if (err.code === 'LIMIT_FILE_SIZE') {
+    err.status = 413;
+    err.message = 'Photo exceeds the 8 MB limit.';
+  }
   const status =
     err instanceof ZodError
       ? 400
