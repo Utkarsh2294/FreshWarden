@@ -22,6 +22,10 @@ MERN, JavaScript ESM, React 18/Vite, npm workspaces, API configuration, CI, PWA 
 
 134 API + 2 web tests pass. Proof-based closure and grouped findings implemented; no live vision or 40-photo precision/recall claim. Browser exercised the development cold-chain simulator: a closed excursion and estimated debit appeared, and affected lots remained quarantined.
 
+## Phase 5 — Dispatch (local checks passed)
+
+153 API tests pass, including atomic transaction packing and concurrent last-unit protection. Controlled 50-order HTTP test blocks all 10 seeded bad cases with zero false blocks. Runtime benchmark script added; no production/load latency claim. Offline drafts remain blocked until an online check. See phase-5.md.
+
 ## Phase gates
 
 Before each new phase re-read the source plan and both master prompts; implement and verify the current phase before advancing. External acceptance checks that need credentials, a phone, real photos, an FSSAI mentor, or hardware must remain pending rather than be claimed as passing.
