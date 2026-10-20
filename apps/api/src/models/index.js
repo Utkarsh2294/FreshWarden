@@ -58,6 +58,8 @@ export const Lot = model(
     mfgDate: Date,
     expDate: Date,
     effectiveExpDate: Date,
+    thermalDebitDays: { type: Number, default: 0 },
+    appliedExcursionIds: [Schema.Types.ObjectId],
     qty: { type: Number, min: 0, required: true },
     zoneId: String,
     status: {

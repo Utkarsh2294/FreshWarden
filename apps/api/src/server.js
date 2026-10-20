@@ -3,6 +3,8 @@ import { readEnv } from './config/env.js';
 import { connectDb } from './config/db.js';
 import { logger } from './config/logger.js';
 import { createApp } from './app.js';
+import { attachRealtime } from './realtime.js';
+import { startMonitor } from './jobs/monitor.js';
 let config;
 try {
   config = readEnv();
@@ -16,6 +18,8 @@ const server = createApp(config).listen(
   process.env.HOST || '127.0.0.1',
   () => logger.info({ port: config.PORT }, 'FreshWarden API ready'),
 );
+const io = attachRealtime(server, config);
+const stopMonitor = startMonitor();
 server.on('error', (error) => {
   logger.error(
     { code: error.code },
@@ -27,6 +31,8 @@ server.on('error', (error) => {
 });
 for (const signal of ['SIGTERM', 'SIGINT'])
   process.on(signal, () => {
+    stopMonitor();
+    io.close();
     server.close(async () => {
       await mongoose.disconnect();
       process.exit(0);
