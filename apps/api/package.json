@@ -1,0 +1,9 @@
+{
+  "name": "@freshwarden/api", "version": "0.1.0", "private": true, "type": "module",
+  "scripts": { "dev": "node --watch src/server.js", "start": "node src/server.js", "test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js --runInBand", "seed": "node src/seed.js" },
+  "dependencies": {
+    "express": "^4.21.2", "mongoose": "^8.19.0", "zod": "^3.25.76", "pino": "^9.14.0", "pino-http": "^10.5.0", "helmet": "^8.1.0", "cors": "^2.8.5", "express-rate-limit": "^7.5.1", "dotenv": "^16.6.1", "jsonwebtoken": "^9.0.2", "bcryptjs": "^3.0.2", "multer": "^2.0.2", "sharp": "^0.34.4"
+  },
+  "devDependencies": { "jest": "^30.2.0", "supertest": "^7.1.4" },
+  "jest": { "testEnvironment": "node", "transform": {}, "testTimeout": 60000 }
+}
