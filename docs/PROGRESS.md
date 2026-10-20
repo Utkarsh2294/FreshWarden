@@ -14,6 +14,10 @@ MERN, JavaScript ESM, React 18/Vite, npm workspaces, API configuration, CI, PWA 
 
 108 API + 2 web tests pass. Evidence, barcode/OCR capture, manual review, gateway fallbacks and idempotent disposition are implemented. See phase-2.md for measured versus pending acceptance and prototype ceilings.
 
+## Phase 3 — Cold chain (implemented; hardware pending)
+
+120 API tests pass including real MongoDB telemetry and excursion flows. Simulator is explicit and development-only. Firmware is uncompiled. See phase-3.md for threshold reconciliation, TTL collection tradeoff and physical checks.
+
 ## Phase gates
 
 Before each new phase re-read the source plan and both master prompts; implement and verify the current phase before advancing. External acceptance checks that need credentials, a phone, real photos, an FSSAI mentor, or hardware must remain pending rather than be claimed as passing.
