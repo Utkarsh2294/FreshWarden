@@ -1,4 +1,5 @@
 import { GoogleGenAI } from '@google/genai';
+import Groq from 'groq-sdk';
 import Bottleneck from 'bottleneck';
 import { createHash } from 'node:crypto';
 import { LlmCall } from '../models/index.js';
@@ -105,6 +106,46 @@ export function createGateway(
   }
   return {
     image,
+    text: async ({ system, user, purpose, schema }) => {
+      const started = Date.now();
+      let ok = false;
+      try {
+        if (!config.GROQ_API_KEY || !config.GROQ_TEXT_MODEL)
+          return { data: null, provider: 'none' };
+        const client = new Groq({
+          apiKey: config.GROQ_API_KEY,
+          timeout: 15000,
+          maxRetries: 2,
+        });
+        const response = await limiter.schedule(() =>
+          client.chat.completions.create({
+            model: config.GROQ_TEXT_MODEL,
+            temperature: 0,
+            messages: [
+              { role: 'system', content: system },
+              { role: 'user', content: user },
+            ],
+            response_format: { type: 'json_object' },
+          }),
+        );
+        const data = schema.parse(
+          JSON.parse(response.choices[0]?.message?.content || ''),
+        );
+        ok = true;
+        return { data, provider: 'groq' };
+      } catch {
+        return { data: null, provider: 'none' };
+      } finally {
+        await audit({
+          provider: 'groq',
+          model: config.GROQ_TEXT_MODEL || 'unconfigured',
+          purpose,
+          latencyMs: Date.now() - started,
+          ok,
+          error: ok ? undefined : 'TEXT_UNAVAILABLE',
+        }).catch(() => {});
+      }
+    },
     status: () => ({
       configured: !!(client && config.GEMINI_VISION_MODEL),
       circuit:

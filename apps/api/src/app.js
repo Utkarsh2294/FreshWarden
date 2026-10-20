@@ -16,13 +16,29 @@ import { coldchainRoutes } from './modules/coldchain/routes.js';
 import { shelfRoutes } from './modules/shelf/routes.js';
 import { incidentRoutes } from './modules/incidents/routes.js';
 import { dispatchRoutes } from './modules/dispatch/routes.js';
+import {
+  publicInspectorRoutes,
+  reportRoutes,
+} from './modules/reports/routes.js';
 export function createApp(config, { gateway = createGateway(config) } = {}) {
   const app = express();
   app.disable('x-powered-by');
   app.use(
     helmet(),
     cors({ origin: config.CLIENT_ORIGIN }),
-    pinoHttp({ logger, genReqId: () => randomUUID() }),
+    pinoHttp({
+      logger,
+      genReqId: () => randomUUID(),
+      serializers: {
+        req: (req) => ({
+          id: req.id,
+          method: req.method,
+          url: req.url
+            ?.split('?')[0]
+            .replace(/(\/inspector\/)[a-f\d]{64}/gi, '$1[redacted]'),
+        }),
+      },
+    }),
   );
   app.use(express.json({ limit: '64kb' }));
   app.use(
@@ -45,6 +61,7 @@ export function createApp(config, { gateway = createGateway(config) } = {}) {
   app.use(
     '/api',
     authRoutes(config),
+    publicInspectorRoutes(),
     coldchainRoutes(config),
     storeRoutes(config),
     catalogRoutes(config),
@@ -52,6 +69,7 @@ export function createApp(config, { gateway = createGateway(config) } = {}) {
     shelfRoutes(config, gateway),
     incidentRoutes(config, gateway),
     dispatchRoutes(config),
+    reportRoutes(config, gateway),
   );
   app.use((_req, res) =>
     res

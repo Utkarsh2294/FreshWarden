@@ -104,6 +104,24 @@ export async function seed(password) {
     ['thermal', { q10: 2, minMinutes: 10, maxGapMinutes: 5 }],
     ['dispatch', { etaBufferMin: 15, enforceFefo: true }],
     ['shelf', { scanEveryHours: 4, minConfidence: 0.6 }],
+    [
+      'risk',
+      {
+        weights: {
+          freshness: 40,
+          thermal: 25,
+          velocity: 20,
+          hygiene: 10,
+          label: 5,
+        },
+        health: {
+          incidentPenalty: 2,
+          excursionMinutePenalty: 0.2,
+          missedScanPenalty: 5,
+          blockPenalty: 1,
+        },
+      },
+    ],
   ];
   for (const [key, params] of ruleEntries)
     await Rule.updateOne(
