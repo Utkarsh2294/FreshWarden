@@ -1,4 +1,42 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-i18n.use(initReactI18next).init({ lng: localStorage.getItem('fw-language') || 'en', fallbackLng: 'en', interpolation: { escapeValue: false }, resources: { en: { translation: { overview: 'Overview', inward: 'Inward Gate', coldchain: 'Cold-Chain Pulse', shelf: 'Shelf Sentinel', dispatch: 'Dispatch Guard', incidents: 'Incidents', reports: 'Compliance', network: 'Network', retry: 'Try again', loading: 'Loading store data…', signout: 'Sign out', guardian: 'The guardian on every shelf' } }, hi: { translation: { overview: 'अवलोकन', inward: 'आवक जाँच', coldchain: 'शीत शृंखला', shelf: 'शेल्फ निरीक्षण', dispatch: 'प्रेषण सुरक्षा', incidents: 'घटनाएँ', reports: 'अनुपालन', network: 'नेटवर्क', retry: 'फिर कोशिश करें', loading: 'स्टोर डेटा लोड हो रहा है…', signout: 'साइन आउट', guardian: 'हर शेल्फ का रखवाला' } } } });
+i18n.use(initReactI18next).init({
+  lng: localStorage.getItem('fw-language') || 'en',
+  fallbackLng: 'en',
+  interpolation: { escapeValue: false },
+  resources: {
+    en: {
+      translation: {
+        overview: 'Overview',
+        inward: 'Inward Gate',
+        coldchain: 'Cold-Chain Pulse',
+        shelf: 'Shelf Sentinel',
+        dispatch: 'Dispatch Guard',
+        incidents: 'Incidents',
+        reports: 'Compliance',
+        network: 'Network',
+        retry: 'Try again',
+        loading: 'Loading store data…',
+        signout: 'Sign out',
+        guardian: 'The guardian on every shelf',
+      },
+    },
+    hi: {
+      translation: {
+        overview: 'अवलोकन',
+        inward: 'आवक जाँच',
+        coldchain: 'शीत शृंखला',
+        shelf: 'शेल्फ निरीक्षण',
+        dispatch: 'प्रेषण सुरक्षा',
+        incidents: 'घटनाएँ',
+        reports: 'अनुपालन',
+        network: 'नेटवर्क',
+        retry: 'फिर कोशिश करें',
+        loading: 'स्टोर डेटा लोड हो रहा है…',
+        signout: 'साइन आउट',
+        guardian: 'हर शेल्फ का रखवाला',
+      },
+    },
+  },
+});
 export default i18n;
