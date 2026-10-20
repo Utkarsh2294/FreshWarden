@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import Login from './pages/Login.jsx';
 import Overview from './pages/Overview.jsx';
+import Inward from './pages/Inward.jsx';
 import { api } from './lib/api.js';
 import { Brand, ErrorState, Empty, PageTitle } from './components/Ui.jsx';
 const navigation = [
@@ -253,6 +254,13 @@ export default function App() {
             </div>
           ) : page === 'overview' ? (
             <Overview data={data} onNavigate={go} />
+          ) : page === 'inward' ? (
+            <Inward
+              key={selectedStore}
+              data={data}
+              token={token}
+              user={me.data}
+            />
           ) : (
             <>
               <PageTitle
