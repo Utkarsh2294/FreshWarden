@@ -3,8 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "workspaces": ["apps/*"],
-  "engines": { "node": ">=20.19" },
+  "workspaces": [
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=20.19"
+  },
   "scripts": {
     "dev": "concurrently -k -n api,web \"npm run dev -w apps/api\" \"npm run dev -w apps/web\"",
     "demo": "node tools/demo.js",
@@ -27,5 +31,11 @@
     "mongodb-memory-server": "^10.3.0",
     "prettier": "^3.6.2"
   },
-  "lint-staged": { "*.{js,jsx}": ["eslint --fix", "prettier --write"], "*.{json,css,md,yml}": "prettier --write" }
+  "lint-staged": {
+    "*.{js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,css,md,yml}": "prettier --write"
+  }
 }

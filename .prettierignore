@@ -1,0 +1,4 @@
+docs/reference/
+package-lock.json
+datasets/
+.local/
