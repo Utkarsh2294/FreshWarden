@@ -22,6 +22,8 @@ import {
 import Login from './pages/Login.jsx';
 import Overview from './pages/Overview.jsx';
 import Inward from './pages/Inward.jsx';
+import Coldchain from './pages/Coldchain.jsx';
+import { useRealtime } from './hooks/useRealtime.js';
 import { api } from './lib/api.js';
 import { Brand, ErrorState, Empty, PageTitle } from './components/Ui.jsx';
 const navigation = [
@@ -68,6 +70,7 @@ export default function App() {
     enabled: !!me.data,
   });
   const selectedStore = storeId || stores.data?.[0]?._id;
+  useRealtime(token, selectedStore);
   const overview = useQuery({
     queryKey: ['overview', selectedStore, token],
     queryFn: ({ signal }) =>
@@ -256,6 +259,13 @@ export default function App() {
             <Overview data={data} onNavigate={go} />
           ) : page === 'inward' ? (
             <Inward
+              key={selectedStore}
+              data={data}
+              token={token}
+              user={me.data}
+            />
+          ) : page === 'coldchain' ? (
+            <Coldchain
               key={selectedStore}
               data={data}
               token={token}

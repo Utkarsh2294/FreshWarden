@@ -1437,3 +1437,35 @@ details {
     width: 100%;
   }
 }
+.zone-tabs {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+.metric strong.smaller {
+  font-size: 23px;
+  text-transform: capitalize;
+  overflow-wrap: anywhere;
+  line-height: 1.25;
+}
+.chart {
+  padding: 20px 14px 5px;
+}
+.simulation-panel {
+  padding: 22px;
+  margin-top: 24px;
+  background: #f7f4e9;
+  border: 1px dashed #d6c898;
+  border-radius: 8px;
+}
+.simulation-panel p {
+  font-size: 11px;
+  color: #8b8065;
+  margin: 10px 0 17px;
+}
+.simulation-panel > div {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+}
