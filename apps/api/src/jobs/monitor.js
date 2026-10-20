@@ -1,6 +1,7 @@
 import { Store } from '../models/index.js';
 import { processZone } from '../modules/coldchain/service.js';
 import { logger } from '../config/logger.js';
+import { flagMissedScan } from '../modules/shelf/service.js';
 export function startMonitor() {
   let running = false;
   const timer = setInterval(async () => {
@@ -8,8 +9,10 @@ export function startMonitor() {
     running = true;
     try {
       for (const store of await Store.find().lean())
-        for (const zone of store.zones)
+        for (const zone of store.zones) {
           await processZone(store._id, zone.zoneId);
+          await flagMissedScan(store._id, zone.zoneId);
+        }
     } catch (error) {
       logger.error(
         { code: error.code || 'MONITOR_FAILED' },

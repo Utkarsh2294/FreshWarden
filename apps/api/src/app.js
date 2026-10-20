@@ -13,6 +13,8 @@ import { catalogRoutes } from './modules/catalog/routes.js';
 import { createGateway } from './llm/gateway.js';
 import { inwardRoutes } from './modules/inward/routes.js';
 import { coldchainRoutes } from './modules/coldchain/routes.js';
+import { shelfRoutes } from './modules/shelf/routes.js';
+import { incidentRoutes } from './modules/incidents/routes.js';
 export function createApp(config, { gateway = createGateway(config) } = {}) {
   const app = express();
   app.disable('x-powered-by');
@@ -46,6 +48,8 @@ export function createApp(config, { gateway = createGateway(config) } = {}) {
     storeRoutes(config),
     catalogRoutes(config),
     inwardRoutes(config, gateway),
+    shelfRoutes(config, gateway),
+    incidentRoutes(config, gateway),
   );
   app.use((_req, res) =>
     res
