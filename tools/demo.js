@@ -1,4 +1,4 @@
-import { MongoMemoryServer } from 'mongodb-memory-server';
+import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { spawn } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
@@ -21,17 +21,18 @@ try {
 console.log(
   'Starting local development database. First run downloads MongoDB from its official distribution.',
 );
-const mongo = await MongoMemoryServer.create({
-  instance: {
-    dbPath: path.resolve('.local/mongo'),
-    dbName: 'freshwarden',
-    storageEngine: 'wiredTiger',
-  },
+const mongo = await MongoMemoryReplSet.create({
+  replSet: { count: 1, storageEngine: 'wiredTiger' },
+  instanceOpts: [
+    {
+      dbPath: path.resolve('.local/mongo'),
+    },
+  ],
 });
 const env = {
   ...process.env,
   ...credentials,
-  MONGO_URI: mongo.getUri(),
+  MONGO_URI: mongo.getUri('freshwarden'),
   NODE_ENV: 'development',
 };
 const seed = spawn(process.execPath, ['apps/api/src/seed.js'], {

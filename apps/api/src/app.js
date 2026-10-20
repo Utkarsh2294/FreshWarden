@@ -15,6 +15,7 @@ import { inwardRoutes } from './modules/inward/routes.js';
 import { coldchainRoutes } from './modules/coldchain/routes.js';
 import { shelfRoutes } from './modules/shelf/routes.js';
 import { incidentRoutes } from './modules/incidents/routes.js';
+import { dispatchRoutes } from './modules/dispatch/routes.js';
 export function createApp(config, { gateway = createGateway(config) } = {}) {
   const app = express();
   app.disable('x-powered-by');
@@ -50,6 +51,7 @@ export function createApp(config, { gateway = createGateway(config) } = {}) {
     inwardRoutes(config, gateway),
     shelfRoutes(config, gateway),
     incidentRoutes(config, gateway),
+    dispatchRoutes(config),
   );
   app.use((_req, res) =>
     res
