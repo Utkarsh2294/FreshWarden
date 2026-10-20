@@ -25,6 +25,7 @@ import Inward from './pages/Inward.jsx';
 import Coldchain from './pages/Coldchain.jsx';
 import Shelf from './pages/Shelf.jsx';
 import Incidents from './pages/Incidents.jsx';
+import Dispatch from './pages/Dispatch.jsx';
 import { useRealtime } from './hooks/useRealtime.js';
 import { api } from './lib/api.js';
 import { Brand, ErrorState, Empty, PageTitle } from './components/Ui.jsx';
@@ -282,6 +283,13 @@ export default function App() {
             />
           ) : page === 'incidents' ? (
             <Incidents
+              key={selectedStore}
+              data={data}
+              token={token}
+              user={me.data}
+            />
+          ) : page === 'dispatch' ? (
+            <Dispatch
               key={selectedStore}
               data={data}
               token={token}
