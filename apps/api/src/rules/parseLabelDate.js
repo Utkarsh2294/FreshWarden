@@ -43,6 +43,8 @@ export function parseLabelDate(text, { mfgDate } = {}) {
   if (match) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(mfgDate || ''))
       return { iso: null, precision: null, confidence: 0 };
+    if (!parseLabelDate(mfgDate).iso)
+      return { iso: null, precision: null, confidence: 0 };
     const [y, m, d] = mfgDate.split('-').map(Number),
       target = new Date(Date.UTC(y, m - 1 + +match[1], 1));
     const finalDay = Math.min(

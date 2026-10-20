@@ -54,6 +54,7 @@ export const Lot = model(
     storeId: id,
     productId: { ...id, ref: 'Product' },
     batchNo: String,
+    inwardRecordId: { type: Schema.Types.ObjectId, unique: true, sparse: true },
     mfgDate: Date,
     expDate: Date,
     effectiveExpDate: Date,

@@ -10,7 +10,9 @@ import { errorHandler } from './middleware/error.js';
 import { authRoutes } from './modules/auth/routes.js';
 import { storeRoutes } from './modules/stores/routes.js';
 import { catalogRoutes } from './modules/catalog/routes.js';
-export function createApp(config) {
+import { createGateway } from './llm/gateway.js';
+import { inwardRoutes } from './modules/inward/routes.js';
+export function createApp(config, { gateway = createGateway(config) } = {}) {
   const app = express();
   app.disable('x-powered-by');
   app.use(
@@ -41,6 +43,7 @@ export function createApp(config) {
     authRoutes(config),
     storeRoutes(config),
     catalogRoutes(config),
+    inwardRoutes(config, gateway),
   );
   app.use((_req, res) =>
     res
