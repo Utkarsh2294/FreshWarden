@@ -1,0 +1,5 @@
+@import 'tailwindcss';
+:root { font-family: Inter, 'Segoe UI', sans-serif; color: #1d302b; background: #f6f8f6; font-synthesis: none; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { padding: 2rem; }
