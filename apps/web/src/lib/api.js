@@ -18,7 +18,10 @@ export async function api(path, { body, token, signal, ...options } = {}) {
       { status: response.status },
     );
   }
-  if (response.headers.get('content-type')?.includes('application/pdf'))
+  if (
+    response.headers.get('content-type')?.includes('application/pdf') ||
+    response.headers.get('content-type')?.startsWith('image/')
+  )
     return response.blob();
   return response.json();
 }
