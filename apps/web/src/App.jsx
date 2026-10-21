@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -34,6 +34,9 @@ import { api } from './lib/api.js';
 import { cachedOverview } from './lib/outbox.js';
 import SyncStatus from './components/SyncStatus.jsx';
 import { Brand, ErrorState, Empty, PageTitle } from './components/Ui.jsx';
+const Stress = import.meta.env.DEV
+  ? lazy(() => import('./pages/Stress.jsx'))
+  : null;
 const navigation = [
   ['overview', LayoutDashboard, 'WORKSPACE'],
   ['inward', ScanLine],
@@ -98,6 +101,12 @@ export default function App() {
       client.clear();
     }
   }, [me.error, client]);
+  if (Stress && location.pathname === '/__stress')
+    return (
+      <Suspense fallback={<p role="status">Loading stress fixture…</p>}>
+        <Stress />
+      </Suspense>
+    );
   if (location.pathname.startsWith('/inspect/'))
     return <Inspector accessToken={location.pathname.split('/')[2]} />;
   if (!token) return <Login onLogin={login} />;

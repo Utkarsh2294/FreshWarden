@@ -1625,3 +1625,45 @@ details {
   color: #81917a;
   overflow-wrap: anywhere;
 }
+.sync-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 0 22px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.sync-error {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 100%;
+  overflow-wrap: anywhere;
+}
+.stress-page {
+  padding-bottom: 120px;
+}
+.stress-toggle {
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-wrap: wrap;
+  width: max-content;
+  max-width: 95%;
+  padding: 4px;
+  gap: 4px;
+  background: #eee;
+  border: 1px solid #bbb;
+  border-radius: 8px;
+  z-index: 100;
+}
+.stress-toggle button {
+  padding: 8px;
+  font-size: 12px;
+}
+.stress-toggle button[aria-pressed='true'] {
+  background: white;
+}
