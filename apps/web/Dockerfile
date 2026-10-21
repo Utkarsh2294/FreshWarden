@@ -5,6 +5,7 @@ COPY apps/api/package.json apps/api/package.json
 COPY apps/web/package.json apps/web/package.json
 RUN npm ci --ignore-scripts
 COPY apps/web apps/web
+COPY apps/api/src/rules apps/api/src/rules
 RUN npm run build
 FROM nginx:alpine
 COPY apps/web/nginx.conf /etc/nginx/conf.d/default.conf

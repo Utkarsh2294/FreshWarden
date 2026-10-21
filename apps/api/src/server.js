@@ -29,11 +29,14 @@ server.on('error', (error) => {
   );
   process.exit(1);
 });
+let stopping = false;
 for (const signal of ['SIGTERM', 'SIGINT'])
   process.on(signal, () => {
+    if (stopping) return;
+    stopping = true;
     stopMonitor();
-    io.close();
-    server.close(async () => {
+    // Socket.IO closes its attached HTTP server and waits for in-flight requests.
+    io.close(async () => {
       await mongoose.disconnect();
       process.exit(0);
     });

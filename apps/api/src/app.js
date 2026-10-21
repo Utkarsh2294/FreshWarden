@@ -28,6 +28,11 @@ export function createApp(config, { gateway } = {}) {
   const metrics = createMetrics();
   gateway ||= createGateway(config, { observe: metrics.observe });
   app.disable('x-powered-by');
+  app.set('trust proxy', config.TRUST_PROXY || false);
+  app.use('/api', (_req, res, next) => {
+    res.set('Cache-Control', 'private, no-store');
+    next();
+  });
   app.use(
     helmet(),
     cors({ origin: config.CLIENT_ORIGIN }),

@@ -13,7 +13,33 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run lint
+      - run: npm run format:check
       - run: npm test
         env:
           NODE_ENV: test
       - run: npm run build
+      - run: npm audit --omit=dev --audit-level=high
+      - run: docker build -f apps/api/Dockerfile -t freshwarden-api .
+      - run: docker build -f apps/web/Dockerfile -t freshwarden-web .
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  deploy:
+    needs: [verify, secrets]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.ENABLE_DEPLOY == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger configured host builds
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+          WEB_DEPLOY_HOOK_URL: ${{ secrets.WEB_DEPLOY_HOOK_URL }}
+        run: |
+          test -n "$RENDER_DEPLOY_HOOK_URL" && test -n "$WEB_DEPLOY_HOOK_URL"
+          curl --fail --silent --output /dev/null --request POST "$RENDER_DEPLOY_HOOK_URL"
+          curl --fail --silent --output /dev/null --request POST "$WEB_DEPLOY_HOOK_URL"

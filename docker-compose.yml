@@ -1,6 +1,19 @@
 services:
   mongo:
     image: mongo:7
+    command: ['mongod', '--replSet', 'rs0', '--bind_ip_all']
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'mongosh',
+          '--quiet',
+          '--eval',
+          "try { if (db.hello().isWritablePrimary) quit(0); try { rs.status(); } catch { rs.initiate({_id:'rs0',members:[{_id:0,host:'mongo:27017'}]}); } quit(1); } catch { quit(1); }",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 30
     ports: ['127.0.0.1:27017:27017']
     volumes: ['mongo-data:/data/db']
   api:
@@ -9,10 +22,12 @@ services:
       dockerfile: apps/api/Dockerfile
     env_file: apps/api/.env
     environment:
-      MONGO_URI: mongodb://mongo:27017/freshwarden
+      MONGO_URI: mongodb://mongo:27017/freshwarden?replicaSet=rs0
       CLIENT_ORIGIN: http://localhost:8080
     ports: ['127.0.0.1:5000:5000']
-    depends_on: [mongo]
+    depends_on:
+      mongo:
+        condition: service_healthy
   web:
     build:
       context: .

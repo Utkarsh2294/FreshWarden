@@ -11,12 +11,13 @@ export function createGateway(
     now = Date.now,
     wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
     observe = () => {},
+    retries = 2,
   } = {},
 ) {
   const client = config.GEMINI_API_KEY
     ? new GoogleGenAI({
         apiKey: config.GEMINI_API_KEY,
-        httpOptions: { timeout: 15000 },
+        httpOptions: { timeout: 15000, retryOptions: { attempts: 1 } },
       })
     : null;
   const limiter = new Bottleneck({
@@ -77,7 +78,7 @@ export function createGateway(
       }
       attempted = true;
       let response;
-      for (let attempt = 0; attempt < 3; attempt++) {
+      for (let attempt = 0; attempt <= retries; attempt++) {
         try {
           response = await limiter.schedule(() =>
             generate
@@ -108,7 +109,8 @@ export function createGateway(
           break;
         } catch (error) {
           const status = Number(error.status || error.statusCode || error.code);
-          if (attempt === 2 || !(status === 429 || status >= 500)) throw error;
+          if (attempt === retries || !(status === 429 || status >= 500))
+            throw error;
           await wait(500 * 2 ** attempt + Math.floor(Math.random() * 250));
         }
       }
@@ -152,7 +154,7 @@ export function createGateway(
         const client = new Groq({
           apiKey: config.GROQ_API_KEY,
           timeout: 15000,
-          maxRetries: 2,
+          maxRetries: retries,
         });
         const response = await textLimiter.schedule(() =>
           client.chat.completions.create({

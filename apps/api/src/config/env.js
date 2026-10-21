@@ -9,6 +9,7 @@ export function readEnv(source = process.env) {
       JWT_SECRET: z.string().min(32),
       PORT: z.coerce.number().int().min(1).max(65535).default(5000),
       CLIENT_ORIGIN: z.string().url().default('http://localhost:5173'),
+      TRUST_PROXY: z.coerce.number().int().min(0).max(1).default(0),
       NODE_ENV: z
         .enum(['development', 'test', 'production'])
         .default('development'),
