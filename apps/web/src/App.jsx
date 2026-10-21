@@ -31,6 +31,8 @@ import NetworkPage from './pages/Network.jsx';
 import Inspector from './pages/Inspector.jsx';
 import { useRealtime } from './hooks/useRealtime.js';
 import { api } from './lib/api.js';
+import { cachedOverview } from './lib/outbox.js';
+import SyncStatus from './components/SyncStatus.jsx';
 import { Brand, ErrorState, Empty, PageTitle } from './components/Ui.jsx';
 const navigation = [
   ['overview', LayoutDashboard, 'WORKSPACE'],
@@ -80,7 +82,9 @@ export default function App() {
   const overview = useQuery({
     queryKey: ['overview', selectedStore, token],
     queryFn: ({ signal }) =>
-      api(`/stores/${selectedStore}/overview`, { token, signal }),
+      cachedOverview(`${me.data._id}:${selectedStore}`, () =>
+        api(`/stores/${selectedStore}/overview`, { token, signal }),
+      ),
     enabled: !!selectedStore,
   });
   useEffect(() => {
@@ -250,6 +254,22 @@ export default function App() {
               }).format(new Date())}
             </span>
           </div>
+          {me.data && selectedStore && (
+            <SyncStatus
+              key={`${me.data._id}:${selectedStore}`}
+              userId={me.data._id}
+              storeId={selectedStore}
+              token={token}
+            />
+          )}
+          {data?.offlineSnapshotAt && (
+            <p className="notice" role="status">
+              Read-only saved inventory · last synced{' '}
+              {new Date(data.offlineSnapshotAt).toLocaleString('en-IN')}. Lot
+              status on the server wins. Reconnect before any approval or
+              dispatch.
+            </p>
+          )}
           {me.isError ? (
             <ErrorState error={me.error} retry={() => me.refetch()} />
           ) : stores.isError ? (

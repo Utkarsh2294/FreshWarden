@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Camera, ShieldCheck } from 'lucide-react';
 import { api } from '../lib/api.js';
+import { submitScan } from '../lib/outbox.js';
 import { preparePhoto } from '../lib/capture.js';
 import { usePhotoDraft } from '../hooks/usePhotoDraft.js';
 import {
@@ -18,6 +19,7 @@ export default function Shelf({ data, token, user }) {
     [zoneId, setZoneId] = useState(data.store.zones[0].zoneId),
     [result, setResult] = useState(null),
     [busy, setBusy] = useState(false),
+    [queued, setQueued] = useState(false),
     [error, setError] = useState(null),
     photo = usePhotoDraft(`shelf:${user._id}:${storeId}:${zoneId}`);
   const scans = useQuery({
@@ -35,7 +37,15 @@ export default function Shelf({ data, token, user }) {
       body.append('image', await preparePhoto(photo.file), 'shelf.jpg');
       body.append('storeId', storeId);
       body.append('zoneId', zoneId);
-      setResult(await api('/shelf/scan', { token, method: 'POST', body }));
+      const outcome = await submitScan({
+        path: '/shelf/scan',
+        token,
+        body,
+        userId: user._id,
+        storeId,
+      });
+      setQueued(!!outcome.queued);
+      setResult(outcome.result || null);
       await scans.refetch();
       await photo.clear();
     } catch (error) {
@@ -117,6 +127,12 @@ export default function Shelf({ data, token, user }) {
           }
         >
           {error && <ErrorState error={error} />}{' '}
+          {queued && (
+            <p className="notice" role="status">
+              Evidence queued. Reconnect with this app open, then review the
+              synced result. No offline safety verdict is issued.
+            </p>
+          )}
           {!active ? (
             <Empty title="No shelf evidence yet">
               Submit a photo to begin the inspection trail.

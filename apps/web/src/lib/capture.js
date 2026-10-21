@@ -1,8 +1,9 @@
 import { openDB } from 'idb';
-const database = () =>
-  openDB('freshwarden-capture', 1, {
+export const database = () =>
+  openDB('freshwarden-capture', 2, {
     upgrade(db) {
-      db.createObjectStore('drafts');
+      for (const name of ['drafts', 'outbox', 'snapshots'])
+        if (!db.objectStoreNames.contains(name)) db.createObjectStore(name);
     },
   });
 export async function saveDraft(key, value) {

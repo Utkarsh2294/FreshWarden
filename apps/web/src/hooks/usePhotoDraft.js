@@ -1,13 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { loadDraft, saveDraft, clearDraft } from '../lib/capture.js';
 export function usePhotoDraft(key) {
-  const [file, setFile] = useState(null),
-    [url, setUrl] = useState('');
+  const [selection, setSelection] = useState(null),
+    [url, setUrl] = useState(''),
+    revision = useRef(0);
+  const file = selection?.key === key ? selection.file : null;
+  function setFile(value) {
+    revision.current++;
+    setSelection({ key, file: value });
+    if (value) saveDraft(key, { file: value }).catch(() => {});
+  }
   useEffect(() => {
     let active = true;
+    const started = revision.current;
     loadDraft(key)
       .then((d) => {
-        if (active && d?.file) setFile(d.file);
+        if (active && revision.current === started && d?.file)
+          setSelection({ key, file: d.file });
       })
       .catch(() => {});
     return () => {
@@ -19,7 +28,6 @@ export function usePhotoDraft(key) {
       setUrl('');
       return;
     }
-    saveDraft(key, { file }).catch(() => {});
     const value = URL.createObjectURL(file);
     setUrl(value);
     return () => URL.revokeObjectURL(value);

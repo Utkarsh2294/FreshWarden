@@ -10,6 +10,7 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { api } from '../lib/api.js';
+import { submitScan } from '../lib/outbox.js';
 import {
   preparePhoto,
   readPack,
@@ -52,7 +53,8 @@ export default function Inward({ data, token, user }) {
     [confidence, setConfidence] = useState(0),
     [requestId, setRequestId] = useState(() => crypto.randomUUID()),
     [crop, setCrop] = useState({ x: 0, y: 30, w: 100, h: 40 }),
-    [ocrText, setOcrText] = useState('');
+    [ocrText, setOcrText] = useState(''),
+    [queued, setQueued] = useState(false);
   const scans = useQuery({
     queryKey: ['inward', storeId],
     queryFn: ({ signal }) =>
@@ -157,12 +159,15 @@ export default function Inward({ data, token, user }) {
         }),
       }))
         body.append(name, value);
-      const record = await api('/inward/verify', {
+      const outcome = await submitScan({
+        path: '/inward/verify',
         token,
-        method: 'POST',
         body,
+        userId: user._id,
+        storeId,
       });
-      setResult(record);
+      setQueued(!!outcome.queued);
+      setResult(outcome.result || null);
       await client.invalidateQueries({ queryKey: ['inward', storeId] });
     } catch (error) {
       setError(error);
@@ -448,6 +453,12 @@ export default function Inward({ data, token, user }) {
             </p>
           )}
         </section>
+      )}
+      {queued && (
+        <p className="notice" role="status">
+          Photo queued on this device. Keep this app open after reconnecting.
+          Review the synced scan in recent checks; no lot is accepted offline.
+        </p>
       )}
       <div className="spacer" />
       <Panel
