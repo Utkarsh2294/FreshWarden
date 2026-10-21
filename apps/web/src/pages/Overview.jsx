@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { number } from '../lib/display.js';
 import {
   ArrowRight,
   Boxes,
@@ -20,25 +21,31 @@ import {
 import { evaluateShelfLife } from '../../../api/src/rules/shelfLife.js';
 export default function Overview({ data, onNavigate }) {
   const { store, lots, productCount } = data;
+  const [page, setPage] = useState(0);
   const risk = lots.filter(
     (l) =>
       l.status !== 'accepted' ||
       evaluateShelfLife({ mfgDate: l.mfgDate, expDate: l.effectiveExpDate })
         .status !== 'green',
   );
+  const currentPage = Math.min(
+    page,
+    Math.max(0, Math.ceil(risk.length / 25) - 1),
+  );
+  const visible = risk.slice(currentPage * 25, (currentPage + 1) * 25);
   const accepted = lots.filter((l) => l.status === 'accepted').length;
   const metrics = [
     [
       'Lots under watch',
       lots.length,
-      `${lots.reduce((sum, l) => sum + l.qty, 0)} units in this store`,
+      `${number(lots.reduce((sum, l) => sum + l.qty, 0))} units in this store`,
       Boxes,
       'neutral',
     ],
     [
       'Accepted lots',
       accepted,
-      'Approved for the next safety gate',
+      'Recorded disposition · dispatch checks still apply',
       ShieldCheck,
       'green',
     ],
@@ -123,7 +130,7 @@ export default function Overview({ data, onNavigate }) {
               <span>{label}</span>
               <Icon size={18} />
             </div>
-            <strong>{value}</strong>
+            <strong>{number(value)}</strong>
             <p>{note}</p>
           </section>
         ))}
@@ -131,7 +138,7 @@ export default function Overview({ data, onNavigate }) {
       <div className="overview-grid">
         <Panel
           title="Priority watchlist"
-          meta={`${risk.length} lots need a closer look`}
+          meta={`${number(risk.length)} ${risk.length === 1 ? 'lot needs' : 'lots need'} a closer look`}
         >
           <div className="table-wrap">
             <table>
@@ -144,12 +151,13 @@ export default function Overview({ data, onNavigate }) {
                 </tr>
               </thead>
               <tbody>
-                {risk.map((l) => (
+                {visible.map((l) => (
                   <tr key={l._id}>
                     <td>
                       <strong>{l.productId?.name || 'Unknown product'}</strong>
                       <small>
-                        {l.batchNo} · {l.qty} units
+                        {l.batchNo || 'Batch not recorded'} · {number(l.qty)}{' '}
+                        {l.qty === 1 ? 'unit' : 'units'}
                       </small>
                     </td>
                     <td>
@@ -158,8 +166,24 @@ export default function Overview({ data, onNavigate }) {
                     </td>
                     <td>{formatDate(l.effectiveExpDate)}</td>
                     <td>
-                      <Pill status={l.status}>
-                        {l.status === 'accepted' ? 'Near threshold' : l.status}
+                      <Pill
+                        status={
+                          l.status === 'accepted'
+                            ? evaluateShelfLife({
+                                mfgDate: l.mfgDate,
+                                expDate: l.effectiveExpDate,
+                              }).status
+                            : l.status
+                        }
+                      >
+                        {l.status === 'accepted'
+                          ? evaluateShelfLife({
+                              mfgDate: l.mfgDate,
+                              expDate: l.effectiveExpDate,
+                            }).status === 'red'
+                            ? 'Expiry blocked'
+                            : 'Review expiry'
+                          : l.status}
                       </Pill>
                     </td>
                   </tr>
@@ -167,6 +191,29 @@ export default function Overview({ data, onNavigate }) {
               </tbody>
             </table>
           </div>
+          {risk.length > 25 && (
+            <div className="pagination">
+              <button
+                className="button secondary"
+                disabled={currentPage === 0}
+                onClick={() => setPage(Math.max(0, currentPage - 1))}
+              >
+                Previous
+              </button>
+              <span>
+                {number(currentPage * 25 + 1)}–
+                {number(Math.min((currentPage + 1) * 25, risk.length))} of{' '}
+                {number(risk.length)}
+              </span>
+              <button
+                className="button secondary"
+                disabled={(currentPage + 1) * 25 >= risk.length}
+                onClick={() => setPage(currentPage + 1)}
+              >
+                Next
+              </button>
+            </div>
+          )}
           {!risk.length && (
             <Empty title="No flagged lots">
               Continue scheduled checks to maintain coverage.

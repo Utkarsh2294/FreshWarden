@@ -136,9 +136,19 @@ export async function cachedOverview(key, fetcher) {
       if (error.status || error.name === 'AbortError') throw error;
       const saved = await db.get('snapshots', key);
       if (!saved) throw error;
-      return { ...saved.data, offlineSnapshotAt: saved.savedAt };
+      return Object.assign(saved.data, { offlineSnapshotAt: saved.savedAt });
     }
   } finally {
     db.close();
   }
+}
+export async function cachedSession(path, token, fetcher) {
+  const digest = await crypto.subtle.digest(
+    'SHA-256',
+    new TextEncoder().encode(token),
+  );
+  const key = [...new Uint8Array(digest)]
+    .map((byte) => byte.toString(16).padStart(2, '0'))
+    .join('');
+  return cachedOverview(`session:${key}:${path}`, fetcher);
 }

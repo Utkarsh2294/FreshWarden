@@ -1,4 +1,5 @@
 import 'fake-indexeddb/auto';
+import { Blob as NodeBlob } from 'node:buffer';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { database, saveDraft, loadDraft } from './capture.js';
 import { queueScan, listScans, syncScans, cachedOverview } from './outbox.js';
@@ -30,6 +31,26 @@ it('deduplicates stable requests and never stores authorization', async () => {
   const entries = await listScans('u1', 's1');
   expect(entries).toHaveLength(1);
   expect(JSON.stringify(entries)).not.toContain('session-only');
+});
+it('persists photo bytes and reconstructs a multipart photo during replay', async () => {
+  const entry = input();
+  const image = new NodeBlob(['photo bytes'], { type: 'image/jpeg' });
+  image.name = 'pack.jpg';
+  entry.body = {
+    get: (key) => (key === 'requestId' ? 'photo-id' : null),
+    entries: () =>
+      [
+        ['requestId', 'photo-id'],
+        ['image', image],
+      ][Symbol.iterator](),
+  };
+  await queueScan(entry);
+  const request = vi.fn().mockResolvedValue({ _id: 'stored' });
+  await syncScans({ ...entry, request });
+  const photo = request.mock.calls[0][1].body.get('image');
+  expect(photo.size).toBe(11);
+  expect(photo.type).toBe('image/jpeg');
+  expect(photo.name).toBe('pack.jpg');
 });
 it('backs off network failure, scopes replay, and removes only successful scans', async () => {
   await queueScan(input());

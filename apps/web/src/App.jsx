@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useState, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -21,19 +21,20 @@ import {
 } from 'lucide-react';
 import Login from './pages/Login.jsx';
 import Overview from './pages/Overview.jsx';
-import Inward from './pages/Inward.jsx';
-import Coldchain from './pages/Coldchain.jsx';
-import Shelf from './pages/Shelf.jsx';
-import Incidents from './pages/Incidents.jsx';
-import Dispatch from './pages/Dispatch.jsx';
-import Reports from './pages/Reports.jsx';
-import NetworkPage from './pages/Network.jsx';
-import Inspector from './pages/Inspector.jsx';
+const Inward = lazy(() => import('./pages/Inward.jsx'));
+const Coldchain = lazy(() => import('./pages/Coldchain.jsx'));
+const Shelf = lazy(() => import('./pages/Shelf.jsx'));
+const Incidents = lazy(() => import('./pages/Incidents.jsx'));
+const Dispatch = lazy(() => import('./pages/Dispatch.jsx'));
+const Reports = lazy(() => import('./pages/Reports.jsx'));
+const NetworkPage = lazy(() => import('./pages/Network.jsx'));
+const Inspector = lazy(() => import('./pages/Inspector.jsx'));
 import { useRealtime } from './hooks/useRealtime.js';
 import { api } from './lib/api.js';
-import { cachedOverview } from './lib/outbox.js';
+import { cachedOverview, cachedSession } from './lib/outbox.js';
 import SyncStatus from './components/SyncStatus.jsx';
 import { Brand, ErrorState, Empty, PageTitle } from './components/Ui.jsx';
+import { initials } from './lib/display.js';
 const Stress = import.meta.env.DEV
   ? lazy(() => import('./pages/Stress.jsx'))
   : null;
@@ -48,6 +49,8 @@ const navigation = [
   ['network', Network],
 ];
 export default function App() {
+  const sidebar = useRef(null),
+    menuTrigger = useRef(null);
   const [token, setToken] = useState(
       () => sessionStorage.getItem('fw-token') || '',
     ),
@@ -71,18 +74,23 @@ export default function App() {
   }
   const me = useQuery({
     queryKey: ['me', token],
-    queryFn: ({ signal }) => api('/me', { token, signal }),
+    queryFn: ({ signal }) =>
+      cachedSession('/me', token, () => api('/me', { token, signal })),
+    networkMode: 'always',
     enabled: !!token,
     retry: false,
   });
   const stores = useQuery({
     queryKey: ['stores', token],
-    queryFn: ({ signal }) => api('/stores', { token, signal }),
+    queryFn: ({ signal }) =>
+      cachedSession('/stores', token, () => api('/stores', { token, signal })),
+    networkMode: 'always',
     enabled: !!me.data,
   });
   const selectedStore = storeId || stores.data?.[0]?._id;
   useRealtime(token, selectedStore);
   const overview = useQuery({
+    networkMode: 'always',
     queryKey: ['overview', selectedStore, token],
     queryFn: ({ signal }) =>
       cachedOverview(`${me.data._id}:${selectedStore}`, () =>
@@ -101,6 +109,45 @@ export default function App() {
       client.clear();
     }
   }, [me.error, client]);
+  useEffect(() => {
+    if (!menu) return;
+    const previousOverflow = document.body.style.overflow;
+    const trigger = menuTrigger.current;
+    document.body.style.overflow = 'hidden';
+    const controls = () =>
+      [...sidebar.current.querySelectorAll('button, a[href]')].filter(
+        (node) => !node.disabled && node.getClientRects().length,
+      );
+    controls()[0]?.focus();
+    function keydown(event) {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setMenu(false);
+      }
+      if (event.key !== 'Tab') return;
+      const nodes = controls(),
+        first = nodes[0],
+        last = nodes.at(-1);
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first?.focus();
+      }
+    }
+    const resize = () => {
+      if (window.innerWidth > 800) setMenu(false);
+    };
+    document.addEventListener('keydown', keydown);
+    window.addEventListener('resize', resize);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener('keydown', keydown);
+      window.removeEventListener('resize', resize);
+      trigger?.focus();
+    };
+  }, [menu]);
   if (Stress && location.pathname === '/__stress')
     return (
       <Suspense fallback={<p role="status">Loading stress fixture…</p>}>
@@ -108,7 +155,11 @@ export default function App() {
       </Suspense>
     );
   if (location.pathname.startsWith('/inspect/'))
-    return <Inspector accessToken={location.pathname.split('/')[2]} />;
+    return (
+      <Suspense fallback={<p role="status">Loading shared report…</p>}>
+        <Inspector accessToken={location.pathname.split('/')[2]} />
+      </Suspense>
+    );
   if (!token) return <Login onLogin={login} />;
   const go = (path) => {
     navigate(`/${path}`);
@@ -128,7 +179,14 @@ export default function App() {
           onClick={() => setMenu(false)}
         />
       )}
-      <aside className={`sidebar ${menu ? 'open' : ''}`}>
+      <aside
+        ref={sidebar}
+        id="main-navigation"
+        className={`sidebar ${menu ? 'open' : ''}`}
+        role={menu ? 'dialog' : undefined}
+        aria-modal={menu || undefined}
+        aria-label="Store navigation"
+      >
         <Brand />
         <button
           className="mobile-close icon-button"
@@ -146,20 +204,25 @@ export default function App() {
           <ChevronDown size={15} />
         </div>
         <nav aria-label="Main navigation">
-          {navigation.map(([path, Icon, group]) => (
-            <React.Fragment key={path}>
-              {group && <span className="nav-group">{group}</span>}
-              <button
-                className={`nav-item ${page === path ? 'active' : ''}`}
-                onClick={() => go(path)}
-                aria-current={page === path ? 'page' : undefined}
-              >
-                <Icon size={19} />
-                {t(path)}
-                {path === 'inward' && <span className="nav-tag">SCAN</span>}
-              </button>
-            </React.Fragment>
-          ))}
+          {navigation
+            .filter(
+              ([path]) =>
+                path !== 'network' || ['area', 'admin'].includes(me.data?.role),
+            )
+            .map(([path, Icon, group]) => (
+              <React.Fragment key={path}>
+                {group && <span className="nav-group">{group}</span>}
+                <button
+                  className={`nav-item ${page === path ? 'active' : ''}`}
+                  onClick={() => go(path)}
+                  aria-current={page === path ? 'page' : undefined}
+                >
+                  <Icon size={19} />
+                  {t(path)}
+                  {path === 'inward' && <span className="nav-tag">SCAN</span>}
+                </button>
+              </React.Fragment>
+            ))}
         </nav>
         <div className="sidebar-bottom">
           <div className="watch-note">
@@ -180,13 +243,7 @@ export default function App() {
             </a>
           </div>
           <div className="profile">
-            <span className="avatar">
-              {me.data?.name
-                ?.split(' ')
-                .map((n) => n[0])
-                .slice(0, 2)
-                .join('') || 'FW'}
-            </span>
+            <span className="avatar">{initials(me.data?.name)}</span>
             <div>
               <strong>{me.data?.name || 'Loading…'}</strong>
               <small>{me.data?.role || 'Account'}</small>
@@ -201,11 +258,14 @@ export default function App() {
           </div>
         </div>
       </aside>
-      <div className="main-shell">
+      <div className="main-shell" inert={menu ? '' : undefined}>
         <header className="topbar">
           <div className="breadcrumbs">
             <button
               className="mobile-menu icon-button"
+              ref={menuTrigger}
+              aria-expanded={menu}
+              aria-controls="main-navigation"
               aria-label="Open navigation"
               onClick={() => setMenu(true)}
             >
@@ -279,79 +339,87 @@ export default function App() {
               dispatch.
             </p>
           )}
-          {me.isError ? (
-            <ErrorState error={me.error} retry={() => me.refetch()} />
-          ) : stores.isError ? (
-            <ErrorState error={stores.error} retry={() => stores.refetch()} />
-          ) : overview.isError ? (
-            <ErrorState
-              error={overview.error}
-              retry={() => overview.refetch()}
-            />
-          ) : !data ? (
-            <div className="loading" role="status">
-              {t('loading')}
-            </div>
-          ) : page === 'overview' ? (
-            <Overview data={data} onNavigate={go} />
-          ) : page === 'inward' ? (
-            <Inward
-              key={selectedStore}
-              data={data}
-              token={token}
-              user={me.data}
-            />
-          ) : page === 'coldchain' ? (
-            <Coldchain
-              key={selectedStore}
-              data={data}
-              token={token}
-              user={me.data}
-            />
-          ) : page === 'shelf' ? (
-            <Shelf
-              key={selectedStore}
-              data={data}
-              token={token}
-              user={me.data}
-            />
-          ) : page === 'incidents' ? (
-            <Incidents
-              key={selectedStore}
-              data={data}
-              token={token}
-              user={me.data}
-            />
-          ) : page === 'dispatch' ? (
-            <Dispatch
-              key={selectedStore}
-              data={data}
-              token={token}
-              user={me.data}
-            />
-          ) : page === 'reports' ? (
-            <Reports
-              key={selectedStore}
-              data={data}
-              token={token}
-              user={me.data}
-            />
-          ) : page === 'network' ? (
-            <NetworkPage token={token} />
-          ) : (
-            <>
-              <PageTitle
-                title={t(page)}
-                description="This module is scheduled in the source plan."
+          <Suspense
+            fallback={
+              <div className="loading" role="status">
+                {t('loading')}
+              </div>
+            }
+          >
+            {me.isError ? (
+              <ErrorState error={me.error} retry={() => me.refetch()} />
+            ) : stores.isError ? (
+              <ErrorState error={stores.error} retry={() => stores.refetch()} />
+            ) : overview.isError ? (
+              <ErrorState
+                error={overview.error}
+                retry={() => overview.refetch()}
               />
-              <Empty
-                title={`Phase ${{ inward: 2, coldchain: 3, shelf: 4, dispatch: 5, incidents: 4, reports: 6, network: 6 }[page] || 1} — not available yet`}
-              >
-                This phase has not been implemented. No simulated safety
-                decisions are generated here.
-              </Empty>
-            </>
-          )}
+            ) : !data ? (
+              <div className="loading" role="status">
+                {t('loading')}
+              </div>
+            ) : page === 'overview' ? (
+              <Overview data={data} onNavigate={go} />
+            ) : page === 'inward' ? (
+              <Inward
+                key={selectedStore}
+                data={data}
+                token={token}
+                user={me.data}
+              />
+            ) : page === 'coldchain' ? (
+              <Coldchain
+                key={selectedStore}
+                data={data}
+                token={token}
+                user={me.data}
+              />
+            ) : page === 'shelf' ? (
+              <Shelf
+                key={selectedStore}
+                data={data}
+                token={token}
+                user={me.data}
+              />
+            ) : page === 'incidents' ? (
+              <Incidents
+                key={selectedStore}
+                data={data}
+                token={token}
+                user={me.data}
+              />
+            ) : page === 'dispatch' ? (
+              <Dispatch
+                key={selectedStore}
+                data={data}
+                token={token}
+                user={me.data}
+              />
+            ) : page === 'reports' ? (
+              <Reports
+                key={selectedStore}
+                data={data}
+                token={token}
+                user={me.data}
+              />
+            ) : page === 'network' ? (
+              <NetworkPage token={token} />
+            ) : (
+              <>
+                <PageTitle
+                  title={t(page)}
+                  description="This module is scheduled in the source plan."
+                />
+                <Empty
+                  title={`Phase ${{ inward: 2, coldchain: 3, shelf: 4, dispatch: 5, incidents: 4, reports: 6, network: 6 }[page] || 1} — not available yet`}
+                >
+                  This phase has not been implemented. No simulated safety
+                  decisions are generated here.
+                </Empty>
+              </>
+            )}
+          </Suspense>
           <div className="quick-search">
             <Search size={16} />
             <input

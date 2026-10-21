@@ -450,7 +450,7 @@ main {
 }
 .metrics {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
   gap: 16px;
   margin-bottom: 25px;
 }
@@ -523,6 +523,7 @@ main {
 }
 table {
   border-collapse: collapse;
+  min-width: 600px;
   width: 100%;
   font-size: 10px;
   text-align: left;
@@ -995,15 +996,10 @@ label textarea {
     background: #f4f7f1;
   }
 }
-@media (prefers-reduced-motion: no-preference) {
-  .button:active,
-  .gate:active {
-    transform: scale(0.98);
-  }
-  .button,
-  .gate {
-    transition: transform 120ms var(--ease);
-  }
+.button:active,
+.gate:active {
+  border-color: #627b54;
+  background-color: #e4ecdd;
 }
 @media (min-width: 1600px) {
   body {
@@ -1061,10 +1057,12 @@ label textarea {
 @media (max-width: 800px) {
   .sidebar {
     transform: translateX(-100%);
+    visibility: hidden;
     width: 244px;
   }
   .sidebar.open {
     transform: none;
+    visibility: visible;
   }
   .main-shell {
     margin-left: 0;
@@ -1624,6 +1622,36 @@ details {
   font-size: 10px;
   color: #81917a;
   overflow-wrap: anywhere;
+}
+.page-title > div,
+.zone-list strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.zone-list > div > b,
+.metric svg,
+.avatar {
+  flex-shrink: 0;
+}
+td,
+td small {
+  overflow-wrap: anywhere;
+}
+.pagination {
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+@media (max-width: 380px) {
+  .metrics {
+    grid-template-columns: 1fr;
+  }
+  .pagination {
+    flex-wrap: wrap;
+  }
 }
 .sync-status {
   display: flex;
