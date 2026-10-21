@@ -57,7 +57,7 @@ afterAll(async () => {
   await mongo?.stop();
 });
 function scan(fields = {}, token = receiver, options = {}) {
-  return request(app)
+  return request(options.app || app)
     .post('/api/inward/verify')
     .auth(token, { type: 'bearer' })
     .field('storeId', String(store._id))
@@ -239,12 +239,23 @@ describe('persisted inward decisions', () => {
 });
 it('simultaneous offline replays return one inward record', async () => {
   const requestId = randomUUID();
+  const isolated = createApp(config, { gateway });
   const responses = await Promise.all([
-    scan(safeFields, receiver, { requestId }),
-    scan(safeFields, receiver, { requestId }),
+    scan(safeFields, receiver, { requestId, app: isolated }),
+    scan(safeFields, receiver, { requestId, app: isolated }),
   ]);
   expect(responses.every((response) => response.status < 300)).toBe(true);
   expect(responses[0].body._id).toBe(responses[1].body._id);
+});
+it('keeps the upload rate ceiling in place', async () => {
+  const isolated = createApp(config, { gateway });
+  for (let i = 0; i < 13; i++) {
+    const response = await request(isolated)
+      .post('/api/inward/verify')
+      .auth(receiver, { type: 'bearer' })
+      .send({});
+    expect(response.status).toBe(i < 12 ? 400 : 429);
+  }
 });
 describe('gateway safety and cache', () => {
   const full = {
