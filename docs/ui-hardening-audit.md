@@ -38,3 +38,18 @@ Before fixes, the real browser rendered long product names, Hindi, emoji, unknow
 ## Motion audit
 
 See plans/001-remove-repeated-press-motion.md for the separate read-only opportunity and improvement pass. No new motion is justified for frequent safety decisions. Implementation follows the already-authorized hardening pass; no new motion library.
+
+## Separate implementation and final review
+
+| Before                                                 | After                                                                                                 | Why                                                         |
+| ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| Expired accepted lot looked like “Near threshold”      | Explicit red expiry block; unknown expiry needs review                                                | Recorded disposition is not current dispatch eligibility    |
+| Mobile offscreen links remained tabbable               | Closed drawer hidden; open drawer contains focus, supports Escape and returns focus; background inert | Keyboard and screen-reader navigation remains predictable   |
+| Raw counts overflowed at 320px                         | Locale-formatted counts and responsive grid                                                           | Complete values remain readable                             |
+| Every watchlist row rendered                           | 25-row paging with exact range                                                                        | 1,000-row fixture renders 25 rows and advances 1–25 → 26–50 |
+| Naive UTF-16 initials                                  | Grapheme segmentation with fallback                                                                   | Emoji/diacritics stay intact                                |
+| Press transform inherited by frequent/keyboard actions | Immediate background/border feedback; no authored transition                                          | No delay or motion on repeated safety tasks                 |
+
+Browser checks: long Latin/Hindi/unbroken labels, missing product/expiry, zero quantity, empty state, one-item grammar and 1,000-row paging. Responsive worst-case measurements at 320×740, 768×1024, 844×390 and 1440×1000 showed document width ≤ viewport and no overflowing metric numbers. The explicit 200% scale fixture also passed after the responsive-grid correction. 375×812 verified actual manager sign-in, mobile dialog focus, Escape and return to trigger. Dark mode/RTL are outside supported modes. Real phone behavior remains pending.
+
+Final motion verdict: **Approve** for the authored CSS surface. No new animation warranted; no layout/property frame loops, permanent GPU promotion or blur animation. Reduced-motion and keyboard interactions have the same immediate feedback. Charts remain nonanimated. No slow-motion replay applies once authored motion is removed; real-device feel remains an external check.

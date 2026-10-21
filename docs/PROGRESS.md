@@ -26,9 +26,19 @@ MERN, JavaScript ESM, React 18/Vite, npm workspaces, API configuration, CI, PWA 
 
 153 API tests pass, including atomic transaction packing and concurrent last-unit protection. Controlled 50-order HTTP test blocks all 10 seeded bad cases with zero false blocks. Runtime benchmark script added; no production/load latency claim. Offline drafts remain blocked until an online check. See phase-5.md.
 
-## Phase 6 — Reports/network/inspector (implemented; final verification underway)
+## Phase 6 — Reports/network/inspector (local verification passed; external checks pending)
 
 169 API + 2 web tests pass. PDF visually checked; Latin/Devanagari font fallback and footer pagination fixed. Coverage gaps stay explicit. Inspector links expire/revoke and cannot authorize writes. See phase-6.md for bounded report scope and external acceptance still pending.
+
+## Phase 7 — Hardening (implemented locally; external acceptance pending)
+
+Offline account/store-scoped scan replay, retained photo bytes, bounded backoff, session/snapshot recovery, duplicate-write convergence and authoritative server approvals are implemented. UI fixes cover stale photo fields/zone drafts, expired-stock warnings, paginated watchlists, Unicode initials, mobile focus/Escape/return, and lazy chart/map loading. Protected metrics, real status page, provider retries/circuit recovery, generated access inventory, dependency/secret checks and Docker builds are included.
+
+Local verification: 309 API tests and 10 web tests pass after the final replay/rate-limit regression checks; the POSIX shutdown test is skipped on Windows and runs in Linux CI. The earlier complete local run passed 307 API + 10 web tests before those two added API cases. Lint/format/build pass. CI at 8107a75 passed tests (including POSIX shutdown), dependency audit, gitleaks and both Docker builds; final delivered-head CI is linked in the handoff after it completes. Deploy is intentionally skipped without configured host secrets.
+
+Measured isolated HTTP benchmark: all 10/10 unsafe orders blocked among 50, zero false blocks, p50 55.40 ms / p95 83.33 ms. The 150-attempt, 50-rps burst returned 120 HTTP 200 and 30 HTTP 429, p95 1480.47 ms including throttled responses. Synthetic data and temporary replica set only. Source JSON and generated report are in docs/evaluation and docs/eval.md.
+
+Real browser: sign-in, responsive dashboard/stress fixtures (320/375/768/844 landscape/1440 widths), empty/one/1,000-row paging, 200% scale, mobile focus return and `/status` checked. Final worst-case measurements show no document or metric-number overflow at 320/768/844/1440 and 200% scale. Actual compliance download produced a two-page PDF. Physical Android throttling, hardware, live providers, real photo metrics, hosting and legal/privacy pilot review remain pending. See ACCEPTANCE.md and phase-7.md. Phase 8 remains gated.
 
 ## Phase gates
 

@@ -1,6 +1,6 @@
 # Remove repeated press motion
 
-- Status: TODO
+- Status: DONE — separate implementation in 36f64aa; final review in docs/ui-hardening-audit.md
 - Commit: 107152b
 - Severity: HIGH
 - Category: Purpose and frequency
