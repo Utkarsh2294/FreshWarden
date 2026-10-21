@@ -138,6 +138,15 @@ export function inwardRoutes(config, gateway) {
         extracted: verdict.extracted,
         verdict,
         ruleVersion: rule.version,
+      }).catch(async (error) => {
+        if (error.code !== 11000) throw error;
+        const saved = await InwardRecord.findOne({
+          storeId: input.storeId,
+          userId: req.user._id,
+          requestId: input.requestId,
+        });
+        if (!saved) throw error;
+        return saved;
       });
       res.status(201).json(record);
     }),

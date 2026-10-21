@@ -237,6 +237,15 @@ describe('persisted inward decisions', () => {
     expect(res.status).toBe(415);
   });
 });
+it('simultaneous offline replays return one inward record', async () => {
+  const requestId = randomUUID();
+  const responses = await Promise.all([
+    scan(safeFields, receiver, { requestId }),
+    scan(safeFields, receiver, { requestId }),
+  ]);
+  expect(responses.every((response) => response.status < 300)).toBe(true);
+  expect(responses[0].body._id).toBe(responses[1].body._id);
+});
 describe('gateway safety and cache', () => {
   const full = {
     productName: null,

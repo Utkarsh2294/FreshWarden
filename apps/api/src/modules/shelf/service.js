@@ -83,6 +83,7 @@ export async function scanShelf({ file, storeId, zoneId, userId, gateway }) {
               ),
           )
         : null;
+  let created = true;
   const scan = await ShelfScan.create({
     storeId,
     zoneId,
@@ -93,7 +94,18 @@ export async function scanShelf({ file, storeId, zoneId, userId, gateway }) {
     status,
     score,
     ruleVersion: rule.version,
+  }).catch(async (error) => {
+    if (error.code !== 11000) throw error;
+    const saved = await ShelfScan.findOne({
+      storeId,
+      zoneId,
+      sha256: evidence.sha256,
+    });
+    if (!saved) throw error;
+    created = false;
+    return saved;
   });
+  if (!created) return scan;
   if (status === 'reviewed')
     for (const type of new Set(
       result.findings

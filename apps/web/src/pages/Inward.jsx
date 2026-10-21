@@ -101,6 +101,11 @@ export default function Inward({ data, token, user }) {
       return;
     }
     setFile(next);
+    setFields(emptyFields);
+    setBarcode('');
+    setConfidence(0);
+    setOcrText('');
+    setQueued(false);
     setResult(null);
     setSource('manual');
     setRequestId(crypto.randomUUID());
