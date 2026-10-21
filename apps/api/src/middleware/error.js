@@ -1,4 +1,5 @@
 import { ZodError } from 'zod';
+import multer from 'multer';
 export function fail(status, code, message) {
   return Object.assign(new Error(message), { status, code });
 }
@@ -8,6 +9,9 @@ export function errorHandler(err, req, res, _next) {
   if (err.code === 'LIMIT_FILE_SIZE') {
     err.status = 413;
     err.message = 'Photo exceeds the 8 MB limit.';
+  } else if (err instanceof multer.MulterError) {
+    err.status = 400;
+    err.message = 'Upload one allowed photo in the image field.';
   }
   const status =
     err instanceof ZodError

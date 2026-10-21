@@ -5,7 +5,13 @@ import { createHash } from 'node:crypto';
 import { LlmCall } from '../models/index.js';
 export function createGateway(
   config,
-  { generate, audit = (entry) => LlmCall.create(entry) } = {},
+  {
+    generate,
+    audit = (entry) => LlmCall.create(entry),
+    now = Date.now,
+    wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
+    observe = () => {},
+  } = {},
 ) {
   const client = config.GEMINI_API_KEY
     ? new GoogleGenAI({
@@ -20,8 +26,15 @@ export function createGateway(
     strategy: Bottleneck.strategy.OVERFLOW,
   });
   const cache = new Map();
+  const textLimiter = new Bottleneck({
+    minTime: Math.ceil(60000 / (config.LLM_MAX_RPM_GROQ || 25)),
+    maxConcurrent: 1,
+    highWater: 10,
+    strategy: Bottleneck.strategy.OVERFLOW,
+  });
   let failures = 0,
-    openedAt = 0;
+    openedAt = 0,
+    probing = false;
   async function image({
     buffer,
     mimeType = 'image/jpeg',
@@ -30,7 +43,7 @@ export function createGateway(
     schema,
     jsonSchema,
   }) {
-    const started = Date.now(),
+    const started = now(),
       key = createHash('sha256')
         .update(buffer)
         .update(purpose)
@@ -45,49 +58,71 @@ export function createGateway(
       ok: false,
       latencyMs: 0,
     };
+    let attempted = false,
+      ownsProbe = false;
     try {
       const hit = cache.get(key);
-      if (hit && hit.expires > Date.now()) {
+      if (hit && hit.expires > now()) {
         entry.ok = true;
         entry.cacheHit = true;
         return { data: hit.data, provider: 'gemini', cacheHit: true };
       }
       if ((!client || !config.GEMINI_VISION_MODEL) && !generate)
         throw new Error('PROVIDER_UNCONFIGURED');
-      if (failures >= 5 && Date.now() - openedAt < 60000)
-        throw new Error('CIRCUIT_OPEN');
-      const response = await limiter.schedule(() =>
-        generate
-          ? generate({ buffer, prompt, jsonSchema })
-          : client.models.generateContent({
-              model: config.GEMINI_VISION_MODEL,
-              contents: [
-                {
-                  role: 'user',
-                  parts: [
+      if (failures >= 5) {
+        if (now() - openedAt < 60000 || probing)
+          throw new Error('CIRCUIT_OPEN');
+        probing = true;
+        ownsProbe = true;
+      }
+      attempted = true;
+      let response;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          response = await limiter.schedule(() =>
+            generate
+              ? generate({ buffer, prompt, jsonSchema })
+              : client.models.generateContent({
+                  model: config.GEMINI_VISION_MODEL,
+                  contents: [
                     {
-                      inlineData: { mimeType, data: buffer.toString('base64') },
+                      role: 'user',
+                      parts: [
+                        {
+                          inlineData: {
+                            mimeType,
+                            data: buffer.toString('base64'),
+                          },
+                        },
+                        { text: prompt },
+                      ],
                     },
-                    { text: prompt },
                   ],
-                },
-              ],
-              config: {
-                responseMimeType: 'application/json',
-                responseJsonSchema: jsonSchema,
-                temperature: 0,
-              },
-            }),
-      );
+                  config: {
+                    responseMimeType: 'application/json',
+                    responseJsonSchema: jsonSchema,
+                    temperature: 0,
+                  },
+                }),
+          );
+          break;
+        } catch (error) {
+          const status = Number(error.status || error.statusCode || error.code);
+          if (attempt === 2 || !(status === 429 || status >= 500)) throw error;
+          await wait(500 * 2 ** attempt + Math.floor(Math.random() * 250));
+        }
+      }
       const data = schema.parse(JSON.parse(response.text));
       failures = 0;
       entry.ok = true;
       if (cache.size >= 500) cache.delete(cache.keys().next().value);
-      cache.set(key, { data, expires: Date.now() + 86400000 });
+      cache.set(key, { data, expires: now() + 86400000 });
       return { data, provider: 'gemini', cacheHit: false };
     } catch (error) {
-      failures++;
-      if (failures === 5) openedAt = Date.now();
+      if (attempted) {
+        failures++;
+        if (failures >= 5) openedAt = now();
+      }
       entry.error = ['PROVIDER_UNCONFIGURED', 'CIRCUIT_OPEN'].includes(
         error.message,
       )
@@ -100,7 +135,9 @@ export function createGateway(
         error: entry.error,
       };
     } finally {
-      entry.latencyMs = Date.now() - started;
+      if (ownsProbe) probing = false;
+      entry.latencyMs = now() - started;
+      observe(entry);
       await audit(entry).catch(() => {});
     }
   }
@@ -117,7 +154,7 @@ export function createGateway(
           timeout: 15000,
           maxRetries: 2,
         });
-        const response = await limiter.schedule(() =>
+        const response = await textLimiter.schedule(() =>
           client.chat.completions.create({
             model: config.GROQ_TEXT_MODEL,
             temperature: 0,
@@ -136,20 +173,26 @@ export function createGateway(
       } catch {
         return { data: null, provider: 'none' };
       } finally {
-        await audit({
+        const entry = {
           provider: 'groq',
           model: config.GROQ_TEXT_MODEL || 'unconfigured',
           purpose,
           latencyMs: Date.now() - started,
           ok,
           error: ok ? undefined : 'TEXT_UNAVAILABLE',
-        }).catch(() => {});
+        };
+        observe(entry);
+        await audit(entry).catch(() => {});
       }
     },
     status: () => ({
       configured: !!(client && config.GEMINI_VISION_MODEL),
       circuit:
-        failures >= 5 && Date.now() - openedAt < 60000 ? 'open' : 'closed',
+        failures >= 5
+          ? now() - openedAt < 60000
+            ? 'open'
+            : 'half_open'
+          : 'closed',
     }),
   };
 }

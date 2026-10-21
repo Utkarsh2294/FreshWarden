@@ -45,6 +45,27 @@ describe('platform persistence and access', () => {
   it('healthy with connected Mongo', async () => {
     expect((await request(app).get('/health')).status).toBe(200);
   });
+  it('exposes bounded health state and protects operational metrics', async () => {
+    expect((await request(app).get('/health')).body.llm).toEqual({
+      configured: false,
+      circuit: 'closed',
+    });
+    expect((await request(app).get('/metrics')).status).toBe(401);
+    expect(
+      (
+        await request(app)
+          .get('/metrics')
+          .auth(managerToken, { type: 'bearer' })
+      ).status,
+    ).toBe(403);
+    const response = await request(app)
+      .get('/metrics')
+      .auth(await tokenFor('9000000005'), { type: 'bearer' });
+    expect(response.status).toBe(200);
+    expect(response.text).toContain('freshwarden_http_seconds');
+    expect(response.text).toContain('freshwarden_dispatch_blocks');
+    expect(response.text).not.toContain(managerToken);
+  });
   it('valid login returns a signed token', async () => {
     const response = await request(app)
       .post('/api/auth/login')
