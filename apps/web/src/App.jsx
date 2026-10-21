@@ -29,6 +29,7 @@ const Dispatch = lazy(() => import('./pages/Dispatch.jsx'));
 const Reports = lazy(() => import('./pages/Reports.jsx'));
 const NetworkPage = lazy(() => import('./pages/Network.jsx'));
 const Inspector = lazy(() => import('./pages/Inspector.jsx'));
+const Status = lazy(() => import('./pages/Status.jsx'));
 import { useRealtime } from './hooks/useRealtime.js';
 import { api } from './lib/api.js';
 import { cachedOverview, cachedSession } from './lib/outbox.js';
@@ -152,6 +153,12 @@ export default function App() {
     return (
       <Suspense fallback={<p role="status">Loading stress fixture…</p>}>
         <Stress />
+      </Suspense>
+    );
+  if (location.pathname === '/status')
+    return (
+      <Suspense fallback={<p role="status">Loading status…</p>}>
+        <Status />
       </Suspense>
     );
   if (location.pathname.startsWith('/inspect/'))

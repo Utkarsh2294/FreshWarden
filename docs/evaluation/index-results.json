@@ -1,0 +1,37 @@
+{
+  "measuredAt": "2026-10-21T13:53:10.957Z",
+  "scope": "Seeded 12-lot store only; re-run on pilot-sized data",
+  "plan": {
+    "stage": "FETCH",
+    "inputStage": {
+      "stage": "IXSCAN",
+      "keyPattern": {
+        "storeId": 1,
+        "status": 1,
+        "effectiveExpDate": 1
+      },
+      "indexName": "storeId_1_status_1_effectiveExpDate_1",
+      "isMultiKey": false,
+      "multiKeyPaths": {
+        "storeId": [],
+        "status": [],
+        "effectiveExpDate": []
+      },
+      "isUnique": false,
+      "isSparse": false,
+      "isPartial": false,
+      "indexVersion": 2,
+      "direction": "forward",
+      "indexBounds": {
+        "storeId": [
+          "[ObjectId('6ad8c3bfc4d880b25a23e45d'), ObjectId('6ad8c3bfc4d880b25a23e45d')]"
+        ],
+        "status": ["[\"accepted\", \"accepted\"]"],
+        "effectiveExpDate": ["[MinKey, MaxKey]"]
+      }
+    }
+  },
+  "keysExamined": 10,
+  "documentsExamined": 10,
+  "returned": 10
+}

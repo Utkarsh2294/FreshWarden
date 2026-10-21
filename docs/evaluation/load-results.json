@@ -1,0 +1,12 @@
+{
+  "measuredAt": "2026-10-21T13:53:10.949Z",
+  "scope": "Synthetic isolated local HTTP/API/replica-set, 150 attempts scheduled at 50 rps for 3 seconds; includes normal production rate limiting. Native fetch driver, not a sustained-capacity claim.",
+  "attempts": 150,
+  "elapsedMs": 3247.6249000000007,
+  "statuses": {
+    "200": 120,
+    "429": 30
+  },
+  "p50Ms": 950.143,
+  "p95Ms": 1480.4694999999992
+}

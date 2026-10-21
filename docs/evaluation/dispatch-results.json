@@ -1,0 +1,312 @@
+{
+  "measuredAt": "2026-10-21T13:53:07.668Z",
+  "scope": "50 sequential local HTTP requests to configured API and database; synthetic store data, not a load test",
+  "orders": 50,
+  "badOrders": 10,
+  "blockedBad": 10,
+  "falseBlocks": 0,
+  "p50Ms": 55.4037000000003,
+  "p95Ms": 83.33449999999993,
+  "results": [
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5c1",
+      "unsafeExpected": true,
+      "blocked": true,
+      "latencyMs": 74.41130000000004
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 60.24200000000002
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 53.50029999999998
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 44.53129999999999
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 47.13589999999999
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5c1",
+      "unsafeExpected": true,
+      "blocked": true,
+      "latencyMs": 57.58749999999998
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 67.17439999999999
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 51.73919999999998
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 67.47699999999998
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 45.97079999999994
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5c1",
+      "unsafeExpected": true,
+      "blocked": true,
+      "latencyMs": 65.25569999999993
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 55.91300000000001
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 45.303999999999974
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 53.537500000000136
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 49.318700000000035
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5c1",
+      "unsafeExpected": true,
+      "blocked": true,
+      "latencyMs": 58.8103000000001
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 35.698199999999815
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 55.28370000000018
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 34.84879999999998
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 34.33480000000009
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5c1",
+      "unsafeExpected": true,
+      "blocked": true,
+      "latencyMs": 60.80809999999997
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 39.45679999999993
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 59.26310000000012
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 57.3279
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 60.39709999999991
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5c1",
+      "unsafeExpected": true,
+      "blocked": true,
+      "latencyMs": 59.10549999999989
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 74.4366
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 67.7935
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 38.5467000000001
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 61.24850000000015
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5c1",
+      "unsafeExpected": true,
+      "blocked": true,
+      "latencyMs": 83.33449999999993
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 45.49470000000019
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 31.532799999999952
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 32.17900000000009
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 58.183100000000195
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5c1",
+      "unsafeExpected": true,
+      "blocked": true,
+      "latencyMs": 51.81700000000001
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 64.43550000000005
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 37.92290000000003
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 42.9701
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 54.50489999999991
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5c1",
+      "unsafeExpected": true,
+      "blocked": true,
+      "latencyMs": 74.75860000000011
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 55.4037000000003
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 72.84889999999996
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 60.07699999999977
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 93.07999999999993
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5c1",
+      "unsafeExpected": true,
+      "blocked": true,
+      "latencyMs": 89.4423999999999
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 47.316299999999956
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 53.47540000000026
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 66.53819999999996
+    },
+    {
+      "lotId": "6ad8c3c0c4d880b25a23e5bd",
+      "unsafeExpected": false,
+      "blocked": false,
+      "latencyMs": 49.9413999999997
+    }
+  ]
+}

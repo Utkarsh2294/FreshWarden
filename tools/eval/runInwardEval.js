@@ -86,7 +86,7 @@ if (records) {
       'docs/evaluation/inward-results.json',
       JSON.stringify(results, null, 2),
     );
-    await writeFile('docs/eval.md', report);
+    await writeFile('docs/evaluation/inward-summary.md', report);
     console.log(report);
     if (n < 30 || results.some((r) => r.falseAccept)) process.exitCode = 1;
   } finally {
